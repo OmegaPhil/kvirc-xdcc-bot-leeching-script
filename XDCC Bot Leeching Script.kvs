@@ -1,0 +1,216 @@
+# XDCC Bot Leeching Script
+# ========================
+
+# Version 1 April 2014
+
+# This is currently a shell to host XDCC-related popups - when I have the time I am to port the full script
+
+/*
+Copyright (C) 2010-2014 OmegaPhil (OmegaPhil+KVIrc@gmail.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+# EVENTS BLOCK
+# Intercepting successful DCC file transfers
+event(OnDCCFileTransferSuccess,XDCCBotLeechingScript)
+{
+    # $0 = bytes transferred
+    # $1 = DCC session ID
+    
+    # This poor method naturally needs to be replaced with something better when the script is trully ported
+    # Exiting if I'm not waiting on any packlist downloads
+    if (%XDCCBotLeechingScript_PacklistPending == "") return
+    
+    # Obtaining filename
+    %filename = $dcc.localFileName($1)
+    
+    # Debug code
+    #echo "Debug - filename: %filename\n$str.right(%filename,4)"
+    
+    # Checking if the file is text (i.e. likely a packlist)
+    if ($str.right(%filename, 4) == ".txt")
+    {
+        # Debug code
+        #echo "Debug - Reached"
+        
+        # It is - clearing XDCCBotLeechingScript_PacklistPending and opening (KVIrc seems to handle running with paramters perfectly, I don't need to strong quote etc. Infact quote-delimiting breaks the command...)
+        %XDCCBotLeechingScript_PacklistPending = ""
+        run xdg-open %filename
+    }
+}
+
+# Intercepting start events
+event(OnKVIrcStartup,XDCCBotLeechingScript)
+{
+    # Running XDCCBotLeechingScript::Startup
+    XDCCBotLeechingScript::Startup
+}
+
+
+# ALIASES BLOCK
+# Startup alias
+alias(XDCCBotLeechingScript::Startup)
+{
+    # Integrating into nicklist
+    # TODO: When this script is ported, I need to tie these in with the status of the script
+    # Creating script popup
+    if ($popup.exists("XDCCBotLeechingScript_Nicklist")) popup.destroy "XDCCBotLeechingScript_Nicklist"
+    popup.create "XDCCBotLeechingScript_Nicklist"
+
+    # Adding XDCC listing options
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC LIST") ctcp $0 "XDCC LIST"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC SEND 1") 
+    {
+        # Setting XDCCBotLeechingScript_PacklistPending and requesting bot's packlist
+        %XDCCBotLeechingScript_PacklistPending = $true
+        msg $0 "XDCC Send 1"
+    }
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "!blist")
+    {
+        # Setting XDCCBotLeechingScript_PacklistPending and requesting bot's packlist
+        %XDCCBotLeechingScript_PacklistPending = $true
+        msg $0 "!blist"
+    } 
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC SEND LIST")
+    {
+        # Setting XDCCBotLeechingScript_PacklistPending and requesting bot's packlist
+        %XDCCBotLeechingScript_PacklistPending = $true
+        ctcp $0 "XDCC SEND LIST"
+    } 
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC STOP") msg $0 "XDCC STOP"
+
+    # Adding pack information options
+    popup.addSeparator "XDCCBotLeechingScript_Nicklist"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC SEARCH")
+    {
+        # Requesting search pattern (bot name passed as magic parameter)
+        dialog.textinput -i=$icon("Information") ("Search - XDCC Bot Leeching Script", "Pattern to search for on $0:", "OK", "escape=Cancel",,$0)
+        {
+            # Debug code
+            #echo "Dialog return value: "$0
+
+            # Exiting if user cancelled
+            if ($0 == 1) return
+            
+            # Searching with pattern
+            msg $2 "XDCC SEARCH $1"
+        }
+    } 
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC INFO")
+    {
+        # Requesting pack to get info on (bot name passed as magic parameter)
+        dialog.textinput -i=$icon("Information") ("Information - XDCC Bot Leeching Script", "Pack to request information for on $0:", "OK", "escape=Cancel",,$0)
+        {
+            # Debug code
+            #echo "Dialog return value: "$0
+
+            # Exiting if user cancelled
+            if ($0 == 1) return
+            
+            # Requesting information on pack
+            msg $2 "XDCC INFO $1"
+        }
+    } 
+    
+    # Adding basic pack getting options
+    popup.addSeparator "XDCCBotLeechingScript_Nicklist"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "Get pack...")
+    {
+        # Requesting pack to get (bot name passed as magic parameter)
+        dialog.textinput -i=$icon("Information") ("Get Pack - XDCC Bot Leeching Script", "Pack to get off $0:", "OK", "escape=Cancel",,$0)
+        {
+            # Debug code
+            #echo "Dialog return value: "$0
+
+            # Exiting if user cancelled
+            if ($0 == 1) return
+            
+            # Checking if a query window exists for the bot (this is used like a log window to track requested packs)
+            if ($query($2) == 0)
+            {
+                # It doesn't - obtaining the current channel window's ID
+                %windowID = $window
+
+                # Creating the query window and activating the original channel
+                query $2
+                window.activate %windowID 
+            }
+            
+            # Requesting pack
+            msg $2 "XDCC SEND $1"
+        }
+    }
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "Get packs (BATCH)...")
+    {
+        # Requesting packs to get (bot name passed as magic parameter)
+        dialog.textinput -i=$icon("Information") ("Get Packs (BATCH) - XDCC Bot Leeching Script", "XDCC BATCH packrange to get off $0:", "OK", "escape=Cancel",,$0)
+        {
+            # Debug code
+            #echo "Dialog return value: "$0
+
+            # Exiting if user cancelled
+            if ($0 == 1) return
+
+            # Checking if a query window exists for the bot (this is used like a log window to track requested packs)
+            if ($query($2) == 0)
+            {
+                # It doesn't - obtaining the current channel window's ID
+                %windowID = $window
+
+                # Creating the query window and activating the original channel
+                query $2
+                window.activate %windowID 
+            }
+
+            # Requesting packrange
+            msg $2 "XDCC BATCH $1"
+        }
+    }
+    
+    # Adding queue options
+    popup.addSeparator "XDCCBotLeechingScript_Nicklist"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC QUEUE") msg $0 "XDCC QUEUE"
+
+    # Adding queue removal options
+    popup.addSeparator "XDCCBotLeechingScript_Nicklist"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC CANCEL") msg $0 "XDCC CANCEL"
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC REMOVE") msg $0 "XDCC REMOVE"
+
+    # Adding XDCC Bot Leeching Script menu to nicklist popup (ensuring that it doesn't exist already)
+    popup.delitem -q "channel" "XDCCBotLeechingScript_Nicklist_Separator"
+    popup.delitem -q "channel" "XDCCBotLeechingScript_Nicklist"
+    popup.addSeparator "channel" "XDCCBotLeechingScript_Nicklist_Separator"
+    popup.addExtPopup "channel" "XDCCBotLeechingScript_Nicklist" "XDCC Commands" "" "XDCCBotLeechingScript_Nicklist"
+}
+
+
+# Uninstaller alias
+alias(XDCCBotLeechingScript::uninstall::uninstall)
+{
+    # All events and aliases should be uninstalled here
+    alias(XDCCBotLeechingScript::Startup) {}
+    alias(XDCCBotLeechingScript::uninstall::uninstall) {}
+    event(OnDCCFileTransferSuccess,XDCCBotLeechingScript) {}
+    event(OnKVIrcStartup,XDCCBotLeechingScript) {}
+    
+    # Removing popups
+    popup.delitem -q "channel" "XDCCBotLeechingScript_Nicklist_Separator"
+    popup.delitem -q "channel" "XDCCBotLeechingScript_Nicklist"
+    popup.destroy -q "XDCCBotLeechingScript_Nicklist"
+    
+    # Clearing global variables
+    %XDCCBotLeechingScript_PacklistPending = ""
+}
