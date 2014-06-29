@@ -144,9 +144,9 @@ alias(XDCCBotLeechingScript::Startup)
                 # It doesn't - obtaining the current channel window's ID
                 %windowID = $window
 
-                # Creating the query window and activating the original channel
+                # Creating the query window and maximising the original channel (activating normalises the window)
                 query $2
-                window.activate %windowID 
+                window.maximize %windowID
             }
             
             # Requesting pack
@@ -170,9 +170,9 @@ alias(XDCCBotLeechingScript::Startup)
                 # It doesn't - obtaining the current channel window's ID
                 %windowID = $window
 
-                # Creating the query window and activating the original channel
+                # Creating the query window and maximising the original channel (activating normalises the window)
                 query $2
-                window.activate %windowID 
+                window.maximize %windowID
             }
 
             # Requesting packrange
