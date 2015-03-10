@@ -2,7 +2,7 @@ XDCC Bot Leeching Script adds quick access to a collection of XDCC commands, alo
 
 This script was originally intended to be completely ported from the original mIRC script back in 2010 (which included state tracking and assisted queueing etc), but as I used XDCC bots infrequently I never completed the job. If there is sufficient demand I can pick this up again (say so in the issue tracker! See later).
 
-Last updated on 7.04.14 for v1.7.
+Last updated on 10.03.15 for v1.1.
 
 
 Installation
