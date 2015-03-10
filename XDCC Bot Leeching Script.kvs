@@ -78,6 +78,12 @@ alias(XDCCBotLeechingScript::Startup)
         %XDCCBotLeechingScript_PacklistPending = $true
         msg $0 "XDCC Send 1"
     }
+    popup.addItem("XDCCBotLeechingScript_Nicklist", "XDCC SEND -1")
+    {
+        # Setting XDCCBotLeechingScript_PacklistPending and requesting bot's packlist
+        %XDCCBotLeechingScript_PacklistPending = $true
+        msg $0 "XDCC Send -1"
+    }
     popup.addItem("XDCCBotLeechingScript_Nicklist", "!blist")
     {
         # Setting XDCCBotLeechingScript_PacklistPending and requesting bot's packlist
