@@ -35,7 +35,7 @@ Nick Menu Integration
 
 The script's main purpose currently is to add various XDCC commands to the nick menu (right-click the XDCC bot in the nick list):
 
-![Nick menu](https://f92fac806bf10a96c0b8-8a0a46e5f1a5cc9854958bc3503f0f88.ssl.cf1.rackcdn.com/media_entries/7549/nick-menu.png)
+![Nick menu](https://github.com/OmegaPhil/kvirc-xdcc-bot-leeching-script/blob/master/doc/nick-menu.png?raw=true)
 
 The commands are grouped by type. If there is a command you would find handy, please make a feature request on the issue tracker (see later).
 
@@ -43,13 +43,13 @@ With the listing commands at the top, after sending a command to the bot, the sc
 
 Use of 'Get pack...' launches the following dialog:
 
-![XDCC Send dialog](https://f92fac806bf10a96c0b8-8a0a46e5f1a5cc9854958bc3503f0f88.ssl.cf1.rackcdn.com/media_entries/7552/xdcc-send-dialog.png)
+![XDCC Send dialog](https://github.com/OmegaPhil/kvirc-xdcc-bot-leeching-script/blob/master/doc/xdcc-send-dialog.png?raw=true)
 
 Submit the pack number here and the bot is PM'd the command.
 
 'Get packs (BATCH)...' - launches the following dialog:
 
-![XDCC Batch dialog](https://f92fac806bf10a96c0b8-8a0a46e5f1a5cc9854958bc3503f0f88.ssl.cf1.rackcdn.com/media_entries/7551/xdcc-batch-dialog.png)
+![XDCC Batch dialog](https://github.com/OmegaPhil/kvirc-xdcc-bot-leeching-script/blob/master/doc/xdcc-batch-dialog.png?raw=true)
 
 Submit a valid packrange here (without XDCC BATCH) - read on for more detail on this command:
 
