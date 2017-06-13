@@ -8,12 +8,16 @@ Last updated on 10.03.15 for v1.1.
 Installation
 ============
 
-To load the script into KVIrc (which then persists until you uninstall) and run its startup alias, in a KVIrc console window:
+To load the script into KVIrc (which then persists until you uninstall) and run its startup alias, first disable 'User friendly command-line mode' (it prevents the parse command from working):
+
+In a KVIrc console window, look at the bottom right - on the far right of the text entry widget, you'll see an arrow button. Press to expand, then press the 3rd button from the left - normal KVS command mode is now active, and the parse command below works:
 
     /parse <path to script file, speechmark-delimited if the path contains spaces>
     /XDCCBotLeechingScript::Startup
 
 Once the script is installed, XDCCBotLeechingScript::Startup is automatically called when KVIrc is started.
+
+You can turn back on 'User friendly command-line mode' if you want, its a per-window setting.
 
 
 Uninstallation
